@@ -1,0 +1,4 @@
+.*.sw?
+__pycache__
+jptext/_kanjidic_data.py
+jptext/_jmdict_data.py
