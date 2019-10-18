@@ -87,88 +87,88 @@ def add_if_present(data, elem, subelem_name, value=_DEFAULT):
 
 
 def parse_k_ele(elem):
-    data = {'keb': elem.find('keb').text, 'ke_inf': parse_list(elem, 'ke_inf'), 'ke_pri': parse_list(elem, 'ke_pri')}
+    data = {"keb": elem.find("keb").text, "ke_inf": parse_list(elem, "ke_inf"), "ke_pri": parse_list(elem, "ke_pri")}
     return {k: v for k, v in data.items() if v}
 
 
 def parse_r_ele(elem):
     data = {
-        'reb': elem.find('reb').text,
-        're_restr': parse_list(elem, 're_restr'),
-        're_inf': parse_list(elem, 're_inf'),
-        're_pri': parse_list(elem, 're_pri'),
+        "reb": elem.find("reb").text,
+        "re_restr": parse_list(elem, "re_restr"),
+        "re_inf": parse_list(elem, "re_inf"),
+        "re_pri": parse_list(elem, "re_pri"),
     }
-    add_if_present(data, elem, 're_nokanji', True)
+    add_if_present(data, elem, "re_nokanji", True)
     return {k: v for k, v in data.items() if v}
 
 
 def parse_sense(elem, prev_sense):
     data = {
-        'stagk': parse_list(elem, 'stagk'),
-        'stagr': parse_list(elem, 'stagr'),
-        'xref': parse_list(elem, 'xref'),
-        'ant': parse_list(elem, 'ant'),
-        'pos': parse_list(elem, 'pos'),
-        'field': parse_list(elem, 'field'),
-        'misc': parse_list(elem, 'misc'),
-        'dial': parse_list(elem, 'dial'),
-        'lsource': [parse_lsource(e) for e in elem.findall('lsource')],
-        'gloss': parse_glosses(elem),
+        "stagk": parse_list(elem, "stagk"),
+        "stagr": parse_list(elem, "stagr"),
+        "xref": parse_list(elem, "xref"),
+        "ant": parse_list(elem, "ant"),
+        "pos": parse_list(elem, "pos"),
+        "field": parse_list(elem, "field"),
+        "misc": parse_list(elem, "misc"),
+        "dial": parse_list(elem, "dial"),
+        "lsource": [parse_lsource(e) for e in elem.findall("lsource")],
+        "gloss": parse_glosses(elem),
     }
-    add_if_present(data, elem, 's_inf')
-    if not data['pos']:
-        data['pos'] = prev_sense.get('pos', [])
-    if not data['misc']:
-        data['misc'] = prev_sense.get('misc', [])
+    add_if_present(data, elem, "s_inf")
+    if not data["pos"]:
+        data["pos"] = prev_sense.get("pos", [])
+    if not data["misc"]:
+        data["misc"] = prev_sense.get("misc", [])
     return {k: v for k, v in data.items() if v}
 
 
 def get_lang(elem):
-    lang = elem.get('{http://www.w3.org/XML/1998/namespace}lang', 'eng')
+    lang = elem.get("{http://www.w3.org/XML/1998/namespace}lang", "eng")
     return LANG_CONV.get(lang, lang)
 
 
 def parse_lsource(elem):
     data = {
-        '': elem.text,
-        'lang': get_lang(elem),
-        'ls_type': elem.get('ls_type', 'full'),
-        'ls_wasei': bool(elem.find('ls_wasei')),
+        "": elem.text,
+        "lang": get_lang(elem),
+        "ls_type": elem.get("ls_type", "full"),
+        "ls_wasei": bool(elem.find("ls_wasei")),
     }
     return data
 
 
 def parse_glosses(elem):
     data = {}
-    for e in elem.findall('gloss'):
+    for e in elem.findall("gloss"):
         lang = get_lang(e)
-        gloss = {'': e.text}
-        if e.get('g_gend'):
-            gloss['g_gend'] = e.get('g_gend')
-        if e.get('g_type'):
-            gloss['g_type'] = e.get('g_type')
+        gloss = {"": e.text}
+        if e.get("g_gend"):
+            gloss["g_gend"] = e.get("g_gend")
+        if e.get("g_type"):
+            gloss["g_type"] = e.get("g_type")
         data.setdefault(lang, []).append(gloss)
     return data
 
 
 def parse_entry(elem):
     data = {
-        'ent_seq': parse_int(elem, 'ent_seq'),
-        'k_ele': [parse_k_ele(e) for e in elem.findall('k_ele')],
-        'r_ele': [parse_r_ele(e) for e in elem.findall('r_ele')],
-        'sense': [],
+        "ent_seq": parse_int(elem, "ent_seq"),
+        "k_ele": [parse_k_ele(e) for e in elem.findall("k_ele")],
+        "r_ele": [parse_r_ele(e) for e in elem.findall("r_ele")],
+        "sense": [],
     }
     prev_sense = {}
-    for e in elem.findall('sense'):
+    for e in elem.findall("sense"):
         s = parse_sense(e, prev_sense)
-        data['sense'].append(s)
+        data["sense"].append(s)
         prev_sense = s
 
 
 def load_xml(filename):
     tree = xml.etree.ElementTree.parse(filename)
     root = tree.getroot()
-    entries = [parse_entry(elem) for elem in root.iter('entry')]
+    entries = [parse_entry(elem) for elem in root.iter("entry")]
     return entries
 
 
@@ -176,42 +176,42 @@ def print_dict(data, indent):
     if not data or (len(data) == 1 and not isinstance(list(data.values())[0], (dict, list))):
         sys.stdout.write(repr(data))
         return
-    sys.stdout.write('{\n')
+    sys.stdout.write("{\n")
     for key, value in sorted(data.items()):
-        sys.stdout.write('{}    {!r}: '.format(indent, key))
+        sys.stdout.write("{}    {!r}: ".format(indent, key))
         if isinstance(value, dict):
-            print_dict(value, indent + '    ')
+            print_dict(value, indent + "    ")
         elif isinstance(value, list):
-            print_list(value, indent + '    ')
+            print_list(value, indent + "    ")
         else:
             sys.stdout.write(repr(value))
-        sys.stdout.write(',\n')
-    sys.stdout.write(indent + '}')
+        sys.stdout.write(",\n")
+    sys.stdout.write(indent + "}")
 
 
 def print_list(data, indent):
     if not data or (len(data) == 1 and not isinstance(data[0], (dict, list))):
         sys.stdout.write(repr(data))
         return
-    sys.stdout.write('[\n')
+    sys.stdout.write("[\n")
     for value in data:
-        sys.stdout.write('{}    '.format(indent))
+        sys.stdout.write("{}    ".format(indent))
         if isinstance(value, dict):
-            print_dict(value, indent + '    ')
+            print_dict(value, indent + "    ")
         elif isinstance(value, list):
-            print_list(value, indent + '    ')
+            print_list(value, indent + "    ")
         else:
             sys.stdout.write(repr(value))
-        sys.stdout.write(',\n')
-    sys.stdout.write(indent + ']')
+        sys.stdout.write(",\n")
+    sys.stdout.write(indent + "]")
 
 
 entries = load_xml(sys.argv[1])
 
-sys.stdout.write('# -*- coding: utf-8 -*-\n')
-sys.stdout.write('from __future__ import unicode_literals\n')
-sys.stdout.write('\n')
+sys.stdout.write("# -*- coding: utf-8 -*-\n")
+sys.stdout.write("from __future__ import unicode_literals\n")
+sys.stdout.write("\n")
 
-sys.stdout.write('entries = ')
-print_list(entries, '')
-sys.stdout.write('\n')
+sys.stdout.write("entries = ")
+print_list(entries, "")
+sys.stdout.write("\n")

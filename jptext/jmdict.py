@@ -15,15 +15,15 @@ class JMDict(object):
     def reindex(self):
         kanji_index = {}
         for entry in self.data:
-            for k in self._data['k_ele']:
-                kanji_index.setdefault(k['keb'], []).append(entry)
+            for k in self._data["k_ele"]:
+                kanji_index.setdefault(k["keb"], []).append(entry)
         self._kanji_index = kanji_index
 
     def lookup_kanji(self, kanji):
         return [JMDictEntry(entry) for entry in self._kanji_index[kanji]]
 
     def __repr__(self):
-        return '<{}: {} entries>'.format(self.__class__.__name__, len(self._data))
+        return "<{}: {} entries>".format(self.__class__.__name__, len(self._data))
 
 
 class JMDictEntry(object):
@@ -31,7 +31,7 @@ class JMDictEntry(object):
         self._data = data
 
     def __repr__(self):
-        return '<{}: {!r}>'.format(self.__class__.__name__, self.ent_seq)
+        return "<{}: {!r}>".format(self.__class__.__name__, self.ent_seq)
 
     def __eq__(self, other):
         if not isinstance(other, JMDictEntry):
@@ -56,15 +56,15 @@ class JMDictEntry(object):
 
     @property
     def ent_seq(self):
-        return self._data['ent_seq']
+        return self._data["ent_seq"]
 
     @property
     def kanji(self):
-        return [k['keb'] for k in self._data['k_ele']]
+        return [k["keb"] for k in self._data["k_ele"]]
 
     @property
     def readings(self):
-        return [r['reb'] for r in self._data['r_ele']]
+        return [r["reb"] for r in self._data["r_ele"]]
 
 
 _dict = None

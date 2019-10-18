@@ -13,11 +13,11 @@ class KanjiDict(object):
         self.reindex()
 
     def reindex(self):
-        self._kanji_index = {e['literal']: e for e in self._data}
+        self._kanji_index = {e["literal"]: e for e in self._data}
         meaning_index = {}
         for e in self._data:
-            for rmg in e['reading_meaning']['rmgroup']:
-                for lang, meanings in rmg['meaning'].items():
+            for rmg in e["reading_meaning"]["rmgroup"]:
+                for lang, meanings in rmg["meaning"].items():
                     meaning_index.setdefault(lang, {})
                     for m in meanings:
                         meaning_index[lang].setdefault(m, []).append(e)
@@ -34,7 +34,7 @@ class KanjiDict(object):
         return self.get_kanji(kanji)
 
     def __repr__(self):
-        return '<{}: {} entries>'.format(self.__class__.__name__, len(self._data))
+        return "<{}: {} entries>".format(self.__class__.__name__, len(self._data))
 
 
 class KanjiDictEntry(object):
@@ -42,7 +42,7 @@ class KanjiDictEntry(object):
         self._data = data
 
     def __repr__(self):
-        return '<{}: {!r}>'.format(self.__class__.__name__, self.kanji)
+        return "<{}: {!r}>".format(self.__class__.__name__, self.kanji)
 
     def __eq__(self, other):
         if not isinstance(other, KanjiDictEntry):
@@ -67,27 +67,27 @@ class KanjiDictEntry(object):
 
     @property
     def kanji(self):
-        return self._data['literal']
+        return self._data["literal"]
 
     @property
     def freq(self):
-        return self._data['misc'].get('freq')
+        return self._data["misc"].get("freq")
 
     @property
     def stroke_count(self):
-        return self._data['misc'].get('stroke_count')
+        return self._data["misc"].get("stroke_count")
 
     @property
     def grade(self):
-        return self._data['misc'].get('grade')
+        return self._data["misc"].get("grade")
 
     @property
     def all_on_readings(self):
-        return [r[''] for rmg in self._data['reading_meaning']['rmgroup'] for r in rmg['reading'].get('ja_on', [])]
+        return [r[""] for rmg in self._data["reading_meaning"]["rmgroup"] for r in rmg["reading"].get("ja_on", [])]
 
     @property
     def all_kun_readings(self):
-        return [r[''] for rmg in self._data['reading_meaning']['rmgroup'] for r in rmg['reading'].get('ja_kun', [])]
+        return [r[""] for rmg in self._data["reading_meaning"]["rmgroup"] for r in rmg["reading"].get("ja_kun", [])]
 
     @property
     def all_readings(self):
@@ -95,14 +95,14 @@ class KanjiDictEntry(object):
 
     @property
     def nanori(self):
-        return self._data['reading_meaning']['nanori']
+        return self._data["reading_meaning"]["nanori"]
 
-    def all_meanings(self, lang='en'):
-        return sum((rmg['meaning'][lang] for rmg in self._data['reading_meaning']['rmgroup']), [])
+    def all_meanings(self, lang="en"):
+        return sum((rmg["meaning"][lang] for rmg in self._data["reading_meaning"]["rmgroup"]), [])
 
     @property
     def misc(self):
-        return self._data['misc']
+        return self._data["misc"]
 
 
 KanjiDic = KanjiDict

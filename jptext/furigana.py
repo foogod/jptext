@@ -3,7 +3,7 @@ import re
 from . import charset
 from . import kanjidic
 
-hiragana_re = re.compile('[^' + charset.kanji.re_range_nosym + charset.katakana.re_range_nosym + ']+')
+hiragana_re = re.compile("[^" + charset.kanji.re_range_nosym + charset.katakana.re_range_nosym + "]+")
 
 
 class FuriganaError(Exception):
@@ -18,15 +18,15 @@ def get_furi_re(kanji_text):
     while pos < len(kanji_text):
         m = hiragana_re.search(kanji_text, pos=pos)
         if not m:
-            pattern.append('(.+)()')
+            pattern.append("(.+)()")
             break
         if m.start() == pos:
-            pattern.append('()')
+            pattern.append("()")
         else:
-            pattern.append('(.+)')
-        pattern.append('(' + m.group() + ')')
+            pattern.append("(.+)")
+        pattern.append("(" + m.group() + ")")
         pos = m.end()
-    return re.compile(''.join(pattern))
+    return re.compile("".join(pattern))
 
 
 def pairwise(seq):
@@ -37,7 +37,7 @@ def pairwise(seq):
 
 def cleanup_reading(text):
     text = charset.katakana_to_hiragana(text)
-    text = re.sub('[^' + charset.hiragana.re_range_nosym + ']', '', text)
+    text = re.sub("[^" + charset.hiragana.re_range_nosym + "]", "", text)
     return text
 
 
@@ -56,9 +56,9 @@ def match_furi(kanji, furi):
     for char in kanji:
         readings = get_readings(char)
         if readings:
-            pattern.append('(' + '|'.join((re.escape(r) for r in readings)) + ')')
+            pattern.append("(" + "|".join((re.escape(r) for r in readings)) + ")")
         else:
-            pattern.append('(.+)')
+            pattern.append("(.+)")
 
     # We try an exact match with the full expression first.  If that doesn't
     # work, we go one level deeper and see if we can match all-but-one of the
@@ -68,8 +68,8 @@ def match_furi(kanji, furi):
     for i in range(-1, len(pattern)):
         p = list(pattern)
         if i >= 0:
-            p[i] = '(.+)'
-        m = re.match(''.join(p) + '$', furi)
+            p[i] = "(.+)"
+        m = re.match("".join(p) + "$", furi)
         if m:
             return [pair for pair in zip(kanji, m.groups())]
 
@@ -101,8 +101,8 @@ def apply_furi(kanji_text, hiragana_text):
 
 
 def furi_html(kanji_text, hiragana_text):
-    result = ['<ruby>']
+    result = ["<ruby>"]
     for kanji, furi in apply_furi(kanji_text, hiragana_text):
-        result.append('<rb>{}</rb><rt>{}</rt>'.format(html.escape(kanji), html.escape(furi or '')))
-    result.append('</ruby>')
-    return ''.join(result)
+        result.append("<rb>{}</rb><rt>{}</rt>".format(html.escape(kanji), html.escape(furi or "")))
+    result.append("</ruby>")
+    return "".join(result)
