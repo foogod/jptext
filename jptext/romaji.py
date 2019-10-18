@@ -16,19 +16,24 @@ ACTION_PASS = 0
 ACTION_OMIT = 1
 ACTION_ERROR = 2
 
-class RomajiException (Exception):
+
+class RomajiException(Exception):
     pass
 
-class EncodingChangeError (RomajiException):
+
+class EncodingChangeError(RomajiException):
     pass
 
-class Encoding (object):
+
+class Encoding(object):
     base_mapping_info = ()
     auto_sokuon = True
     romaji_regex = re.compile('(.*?)([bcdfghj-np-tv-z]*[aeiou]|n|$)([\u0300-\u036f]?)')
     hiragana_regex = re.compile('(.*?)(' + charset.hiragana.sokuonmora_re + '|$)(ー?)')
     katakana_regex = re.compile('(.*?)(' + charset.katakana.sokuonmora_re + '|$)(ー?)')
-    kana_regex = re.compile('(.*?)(' + charset.hiragana.sokuonmora_re + '|' + charset.katakana.sokuonmora_re + '|$)(ー?)')
+    kana_regex = re.compile(
+        '(.*?)(' + charset.hiragana.sokuonmora_re + '|' + charset.katakana.sokuonmora_re + '|$)(ー?)'
+    )
 
     def __init__(self, flags=KEXT_ALL):
         self.flags = flags
@@ -65,7 +70,6 @@ class Encoding (object):
             if hiragana or katakana:
                 self._set_encoding(hiragana, katakana, romaji, direction)
 
-
     def _set_encoding(self, hiragana, katakana, romaji, direction):
         if hiragana:
             if direction & DIR_TO_ROMAJI:
@@ -94,17 +98,9 @@ class Encoding (object):
         return Decoder(self.romaji_regex, self.r_to_k_map, macrons=macron).decode(text)
 
 
-class Encoder (object):
-    extended_vowel_map = {  #FIXME: should come from encoding
-        'a': 'a',
-        'i': 'i',
-        'u': 'u',
-        'e': 'e',
-        'o': 'ou',
-    }
-    macron_to_vowel_map = {  #FIXME: should come from encoding
-        'o': 'u',
-    }
+class Encoder(object):
+    extended_vowel_map = {'a': 'a', 'i': 'i', 'u': 'u', 'e': 'e', 'o': 'ou'}  # FIXME: should come from encoding
+    macron_to_vowel_map = {'o': 'u'}  # FIXME: should come from encoding
 
     def __init__(self, regex, mapping, macron=None):
         self.mapping = mapping
@@ -113,7 +109,6 @@ class Encoder (object):
         self.prev_char = None
 
     def encode(self, text):
-        #text = unicodedata.normalize('NFD', text)
         text = self.regex.sub(self._transform_match, text)
         text = unicodedata.normalize('NFC', text)
         return text
@@ -123,7 +118,6 @@ class Encoder (object):
         text = self.mapping.get(text, text)
         if self.macron:
             if not pre and text[0] in self.extended_vowel_map.get(self.prev_char, ''):
-                #print("extended syllable: {} + {}".format(self.prev_char, text[0]))
                 text = self.macron
             self.prev_char = text[-1] if not post else None
         if post:
@@ -134,14 +128,8 @@ class Encoder (object):
         return pre + text
 
 
-class Decoder (object):
-    extvowel_to_kana_map = {  #FIXME: should come from encoding
-        'a': 'あ',
-        'i': 'い',
-        'u': 'う',
-        'e': 'え',
-        'o': 'う',
-    }
+class Decoder(object):
+    extvowel_to_kana_map = {'a': 'あ', 'i': 'い', 'u': 'う', 'e': 'え', 'o': 'う'}  # FIXME: should come from encoding
 
     def __init__(self, regex, mapping, macrons=''):
         self.mapping = mapping
@@ -162,7 +150,7 @@ class Decoder (object):
         return pre + text + post
 
 
-class ModifiedHepburnEncoding (Encoding):
+class ModifiedHepburnEncoding(Encoding):
     base_mapping_info = (
         ('あ', 'ア', 'a', KEXT_NONE),
         ('い', 'イ', 'i', KEXT_NONE),
@@ -229,9 +217,9 @@ class ModifiedHepburnEncoding (Encoding):
         ('りゅ', 'リュ', 'ryu', KEXT_NONE),
         ('りょ', 'リョ', 'ryo', KEXT_NONE),
         ('わ', 'ワ', 'wa', KEXT_NONE),
-        ('ゐ', 'ヰ', 'i', KEXT_NONE),  #FIXME
-        ('ゑ', 'ヱ', 'e', KEXT_NONE),  #FIXME
-        ('を', 'ヲ', 'o', KEXT_NONE),  #FIXME
+        ('ゐ', 'ヰ', 'i', KEXT_NONE),  # FIXME
+        ('ゑ', 'ヱ', 'e', KEXT_NONE),  # FIXME
+        ('を', 'ヲ', 'o', KEXT_NONE),  # FIXME
         ('ん', 'ン', 'n', KEXT_NONE),
         ('が', 'ガ', 'ga', KEXT_NONE),
         ('ぎ', 'ギ', 'gi', KEXT_NONE),
@@ -358,8 +346,9 @@ class ModifiedHepburnEncoding (Encoding):
         ('', 'ヺ', 'vo', KEXT_ANSI),
     )
 
+
 _default_encoding = ModifiedHepburnEncoding()
+
 
 def kana_to_romaji(text, on_invalid=ACTION_PASS, macron=None):
     return _default_encoding.kana_to_romaji(text, on_invalid=on_invalid, macron=macron)
-

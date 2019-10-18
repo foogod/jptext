@@ -3,10 +3,12 @@
 import sys
 import xml.etree.ElementTree
 
+
 def parse_list(elem, subelem_name):
     if elem is None:
         return []
     return [e.text for e in elem.findall(subelem_name)]
+
 
 def parse_elem(elem, dont_include=[]):
     value = dict(elem.attrib)
@@ -18,15 +20,18 @@ def parse_elem(elem, dont_include=[]):
     value[''] = elem.text
     return value
 
+
 def parse_dict(elem, subelem_name, key_attr, default_key=None):
     if elem is None:
         return {}
     return {e.get(key_attr, default_key): e.text for e in elem.findall(subelem_name)}
 
+
 def parse_dict_with_attrs(elem, subelem_name, key_attr, default_key=None):
     if elem is None:
         return {}
     return {e.get(key_attr, default_key): parse_elem(e, [key_attr]) for e in elem.findall(subelem_name)}
+
 
 def parse_multidict(elem, subelem_name, key_attr, default_key=None):
     if elem is None:
@@ -37,6 +42,7 @@ def parse_multidict(elem, subelem_name, key_attr, default_key=None):
         result.setdefault(key, []).append(e.text)
     return result
 
+
 def parse_multidict_with_attrs(elem, subelem_name, key_attr, default_key=None):
     if elem is None:
         return {}
@@ -46,6 +52,7 @@ def parse_multidict_with_attrs(elem, subelem_name, key_attr, default_key=None):
         result.setdefault(key, []).append(parse_elem(e, [key_attr]))
     return result
 
+
 def parse_int(elem, subelem_name):
     if elem is None:
         return None
@@ -54,6 +61,7 @@ def parse_int(elem, subelem_name):
         return int(sub.text)
     else:
         return None
+
 
 def parse_misc(elem):
     return {
@@ -65,11 +73,9 @@ def parse_misc(elem):
         'rad_name': parse_list(elem, 'rad_name'),
     }
 
+
 def parse_reading_meaning(elem):
-    results = {
-        'rmgroup': [],
-        'nanori': parse_list(elem, 'nanori'),
-    }
+    results = {'rmgroup': [], 'nanori': parse_list(elem, 'nanori')}
     if elem is None:
         return results
     for rmgroup in elem.findall('rmgroup'):
@@ -78,6 +84,7 @@ def parse_reading_meaning(elem):
         data['meaning'] = parse_multidict(rmgroup, 'meaning', 'm_lang', 'en')
         results['rmgroup'].append(data)
     return results
+
 
 def load_xml(filename):
     tree = xml.etree.ElementTree.parse(filename)
@@ -102,6 +109,7 @@ def load_xml(filename):
         characters.append(data)
     return (header, characters)
 
+
 def print_dict(data, indent):
     if not data or (len(data) == 1 and not isinstance(list(data.values())[0], (dict, list))):
         sys.stdout.write(repr(data))
@@ -117,6 +125,7 @@ def print_dict(data, indent):
             sys.stdout.write(repr(value))
         sys.stdout.write(',\n')
     sys.stdout.write(indent + '}')
+
 
 def print_list(data, indent):
     if not data or (len(data) == 1 and not isinstance(data[0], (dict, list))):

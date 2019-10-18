@@ -3,6 +3,7 @@
 import sys
 import xml.etree.ElementTree
 
+# fmt: off
 LANG_CONV = {
     'aar': 'aa', 'abk': 'ab', 'afr': 'af', 'aka': 'ak',
     'alb': 'sq', 'amh': 'am', 'ara': 'ar', 'arg': 'an',
@@ -53,13 +54,16 @@ LANG_CONV = {
 
     'mol': 'ro', 'chn': 'zh', 'scr': 'hr',  # Invalid codes
 }
+# fmt: on
 
 _DEFAULT = object()
+
 
 def parse_list(elem, subelem_name):
     if elem is None:
         return []
     return [e.text for e in elem.findall(subelem_name)]
+
 
 def parse_int(elem, subelem_name):
     if elem is None:
@@ -69,6 +73,7 @@ def parse_int(elem, subelem_name):
         return int(sub.text)
     else:
         return None
+
 
 def add_if_present(data, elem, subelem_name, value=_DEFAULT):
     subelems = elem.findall(subelem_name)
@@ -80,13 +85,11 @@ def add_if_present(data, elem, subelem_name, value=_DEFAULT):
         data[subelem_name] = value
     return data
 
+
 def parse_k_ele(elem):
-    data = {
-        'keb': elem.find('keb').text,
-        'ke_inf': parse_list(elem, 'ke_inf'),
-        'ke_pri': parse_list(elem, 'ke_pri'),
-    }
-    return {k:v for k, v in data.items() if v}
+    data = {'keb': elem.find('keb').text, 'ke_inf': parse_list(elem, 'ke_inf'), 'ke_pri': parse_list(elem, 'ke_pri')}
+    return {k: v for k, v in data.items() if v}
+
 
 def parse_r_ele(elem):
     data = {
@@ -96,7 +99,8 @@ def parse_r_ele(elem):
         're_pri': parse_list(elem, 're_pri'),
     }
     add_if_present(data, elem, 're_nokanji', True)
-    return {k:v for k, v in data.items() if v}
+    return {k: v for k, v in data.items() if v}
+
 
 def parse_sense(elem, prev_sense):
     data = {
@@ -116,11 +120,13 @@ def parse_sense(elem, prev_sense):
         data['pos'] = prev_sense.get('pos', [])
     if not data['misc']:
         data['misc'] = prev_sense.get('misc', [])
-    return {k:v for k, v in data.items() if v}
+    return {k: v for k, v in data.items() if v}
+
 
 def get_lang(elem):
     lang = elem.get('{http://www.w3.org/XML/1998/namespace}lang', 'eng')
     return LANG_CONV.get(lang, lang)
+
 
 def parse_lsource(elem):
     data = {
@@ -130,6 +136,7 @@ def parse_lsource(elem):
         'ls_wasei': bool(elem.find('ls_wasei')),
     }
     return data
+
 
 def parse_glosses(elem):
     data = {}
@@ -142,6 +149,7 @@ def parse_glosses(elem):
             gloss['g_type'] = e.get('g_type')
         data.setdefault(lang, []).append(gloss)
     return data
+
 
 def parse_entry(elem):
     data = {
@@ -156,11 +164,13 @@ def parse_entry(elem):
         data['sense'].append(s)
         prev_sense = s
 
+
 def load_xml(filename):
     tree = xml.etree.ElementTree.parse(filename)
     root = tree.getroot()
     entries = [parse_entry(elem) for elem in root.iter('entry')]
     return entries
+
 
 def print_dict(data, indent):
     if not data or (len(data) == 1 and not isinstance(list(data.values())[0], (dict, list))):
@@ -177,6 +187,7 @@ def print_dict(data, indent):
             sys.stdout.write(repr(value))
         sys.stdout.write(',\n')
     sys.stdout.write(indent + '}')
+
 
 def print_list(data, indent):
     if not data or (len(data) == 1 and not isinstance(data[0], (dict, list))):

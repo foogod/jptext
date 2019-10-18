@@ -3,10 +3,11 @@
 from __future__ import unicode_literals
 
 
-class JMDict (object):
+class JMDict(object):
     def __init__(self, data=None):
         if data is None:
             from . import _jmdict_data
+
             data = _jmdict_data.entries
         self._data = data
         self.reindex()
@@ -25,7 +26,7 @@ class JMDict (object):
         return '<{}: {} entries>'.format(self.__class__.__name__, len(self._data))
 
 
-class JMDictEntry (object):
+class JMDictEntry(object):
     def __init__(self, data):
         self._data = data
 
@@ -41,7 +42,7 @@ class JMDictEntry (object):
         if not isinstance(other, JMDictEntry):
             raise TypeError("'>' not supported between instances of {!r} and {!r}".format(type(self), type(other)))
         try:
-            return self.ent_seq > other.ent_seq #FIXME
+            return self.ent_seq > other.ent_seq  # FIXME
         except TypeError:
             return False
 
@@ -49,7 +50,7 @@ class JMDictEntry (object):
         if not isinstance(other, JMDictEntry):
             raise TypeError("'<' not supported between instances of {!r} and {!r}".format(type(self), type(other)))
         try:
-            return self.ent_seq < other.ent_seq #FIXME
+            return self.ent_seq < other.ent_seq  # FIXME
         except TypeError:
             return False
 
@@ -66,7 +67,6 @@ class JMDictEntry (object):
         return [r['reb'] for r in self._data['r_ele']]
 
 
-
 _dict = None
 
 
@@ -79,4 +79,3 @@ def _default_jmdict():
 
 def lookup_kanji(kanji):
     return _default_kanjidict().lookup_kanji(kanji)
-

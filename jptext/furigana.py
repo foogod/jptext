@@ -5,8 +5,10 @@ from . import kanjidic
 
 hiragana_re = re.compile('[^' + charset.kanji.re_range_nosym + charset.katakana.re_range_nosym + ']+')
 
-class FuriganaError (Exception):
+
+class FuriganaError(Exception):
     pass
+
 
 def get_furi_re(kanji_text):
     global hiragana_re
@@ -26,15 +28,18 @@ def get_furi_re(kanji_text):
         pos = m.end()
     return re.compile(''.join(pattern))
 
+
 def pairwise(seq):
     "[1, 2, 3, 4, ...] -> [(1, 2), (3, 4), ...]"
     i = iter(seq)
     return zip(i, i)
 
+
 def cleanup_reading(text):
     text = charset.katakana_to_hiragana(text)
     text = re.sub('[^' + charset.hiragana.re_range_nosym + ']', '', text)
     return text
+
 
 def get_readings(kanji_char):
     try:
@@ -42,6 +47,7 @@ def get_readings(kanji_char):
     except KeyError:
         return set()
     return set((cleanup_reading(r) for r in kde.all_readings))
+
 
 def match_furi(kanji, furi):
     # Construct a regular expression pattern of all possible ways to read this
@@ -71,6 +77,7 @@ def match_furi(kanji, furi):
     # Give up and just return it as a group.
     return [(kanji, furi)]
 
+
 def apply_furi(kanji_text, hiragana_text):
     furi_re = get_furi_re(kanji_text)
     m = furi_re.match(hiragana_text)
@@ -92,10 +99,10 @@ def apply_furi(kanji_text, hiragana_text):
             result.extend(match_furi(k_seq, furi))
     return result
 
+
 def furi_html(kanji_text, hiragana_text):
     result = ['<ruby>']
     for kanji, furi in apply_furi(kanji_text, hiragana_text):
         result.append('<rb>{}</rb><rt>{}</rt>'.format(html.escape(kanji), html.escape(furi or '')))
     result.append('</ruby>')
     return ''.join(result)
-

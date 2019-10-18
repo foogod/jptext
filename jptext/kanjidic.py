@@ -3,10 +3,11 @@
 from __future__ import unicode_literals
 
 
-class KanjiDict (object):
+class KanjiDict(object):
     def __init__(self, data=None):
         if data is None:
             from . import _kanjidic_data
+
             data = _kanjidic_data.characters
         self._data = data
         self.reindex()
@@ -36,7 +37,7 @@ class KanjiDict (object):
         return '<{}: {} entries>'.format(self.__class__.__name__, len(self._data))
 
 
-class KanjiDictEntry (object):
+class KanjiDictEntry(object):
     def __init__(self, data):
         self._data = data
 
@@ -123,4 +124,3 @@ def get_kanji(kanji):
 
 def lookup_meaning(lang, meaning):
     return _default_kanjidict().lookup_meaning(lang, meaning)
-
