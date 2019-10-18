@@ -2,6 +2,8 @@
 .direnv
 .tox
 *.egg-info
+.coverage
+htmlcov
 __pycache__
 jptext/_kanjidic_data.py
 jptext/_jmdict_data.py
