@@ -21,9 +21,11 @@ class fullwidth(CharacterSet):
     ascii = "\u3000！＂＃＄％＆＇（）＊＋，－．／０１２３４５６７８９：；＜＝＞？＠ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ［＼］＾＿｀ａｂｃｄｅｆｇｈｉｊｋｌｍｎｏｐｑｒｓｔｕｖｗｘｙｚ｛｜｝～"
     space = "\u3000"
     numbers = "０１２３４５６７８９"
-    punctuation = "、。〃〄々〆〇〈〉《》「」『』【】〒〓〔〕〖〗〘〙〚〛〜〝〞〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾！＂＃＄％＆＇（）＊＋，－．／：；＜＝＞？＠｀｛｜｝～｟｠"
+    punctuation = "、。〃〄〆〇〈〉《》「」『』【】〒〓〔〕〖〗〘〙〚〛〜〝〞〟〠〡〢〣〤〥〦〧〨〩〪〭〮〯〫〬〰〱〲〳〴〵〶〷〸〹〺〻〼〽〾！＂＃＄％＆＇（）＊＋，－．／：；＜＝＞？＠｀｛｜｝～｟｠"
     re_range_numbers = "\uff10-\uff19"
-    re_range_punct = "\u3001-\u303e" + "\uff01-\uff0f" + "\uff1a-\uff20" + "\uff40" + "\uff5b-\uff60"
+    # Note: U+3004 ('々') is in the punctuation range, but is really
+    # effectively a word-character, so shouldn't be counted as punctuation.
+    re_range_punct = "\u3001-\u3004" + "\u3006-\u303e" + "\uff01-\uff0f" + "\uff1a-\uff20" + "\uff40" + "\uff5b-\uff60"
 
 
 all_numbers = fullwidth.numbers + halfwidth.numbers
