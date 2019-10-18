@@ -78,4 +78,4 @@ def _default_jmdict():
 
 
 def lookup_kanji(kanji):
-    return _default_kanjidict().lookup_kanji(kanji)
+    return _default_jmdict().lookup_kanji(kanji)
