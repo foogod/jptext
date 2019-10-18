@@ -1,4 +1,7 @@
 .*.sw?
+.direnv
+.tox
+*.egg-info
 __pycache__
 jptext/_kanjidic_data.py
 jptext/_jmdict_data.py
