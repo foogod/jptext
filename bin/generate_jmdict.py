@@ -54,6 +54,382 @@ LANG_CONV = {
 
     'mol': 'ro', 'chn': 'zh', 'scr': 'hr',  # Invalid codes
 }
+
+ENTITIES = {
+    "MA": "martial arts term",
+    "X": "rude or X-rated term (not displayed in educational software)",
+    "abbr": "abbreviation",
+    "adj-i": "adjective (keiyoushi)",
+    "adj-ix": "adjective (keiyoushi) - yoi/ii class",
+    "adj-na": "adjectival nouns or quasi-adjectives (keiyodoshi)",
+    "adj-no": "nouns which may take the genitive case particle `no'",
+    "adj-pn": "pre-noun adjectival (rentaishi)",
+    "adj-t": "`taru' adjective",
+    "adj-f": "noun or verb acting prenominally",
+    "adv": "adverb (fukushi)",
+    "adv-to": "adverb taking the `to' particle",
+    "arch": "archaism",
+    "ateji": "ateji (phonetic) reading",
+    "aux": "auxiliary",
+    "aux-v": "auxiliary verb",
+    "aux-adj": "auxiliary adjective",
+    "Buddh": "Buddhist term",
+    "chem": "chemistry term",
+    "chn": "children's language",
+    "col": "colloquialism",
+    "comp": "computer terminology",
+    "conj": "conjunction",
+    "cop-da": "copula",
+    "ctr": "counter",
+    "derog": "derogatory",
+    "eK": "exclusively kanji",
+    "ek": "exclusively kana",
+    "exp": "expressions (phrases, clauses, etc.)",
+    "fam": "familiar language",
+    "fem": "female term or language",
+    "food": "food term",
+    "geom": "geometry term",
+    "gikun": "gikun (meaning as reading) or jukujikun (special kanji reading)",
+    "hon": "honorific or respectful (sonkeigo) language",
+    "hum": "humble (kenjougo) language",
+    "iK": "word containing irregular kanji usage",
+    "id": "idiomatic expression",
+    "ik": "word containing irregular kana usage",
+    "int": "interjection (kandoushi)",
+    "io": "irregular okurigana usage",
+    "iv": "irregular verb",
+    "ling": "linguistics terminology",
+    "m-sl": "manga slang",
+    "male": "male term or language",
+    "male-sl": "male slang",
+    "math": "mathematics",
+    "mil": "military",
+    "n": "noun (common) (futsuumeishi)",
+    "n-adv": "adverbial noun (fukushitekimeishi)",
+    "n-suf": "noun, used as a suffix",
+    "n-pref": "noun, used as a prefix",
+    "n-t": "noun (temporal) (jisoumeishi)",
+    "num": "numeric",
+    "oK": "word containing out-dated kanji",
+    "obs": "obsolete term",
+    "obsc": "obscure term",
+    "ok": "out-dated or obsolete kana usage",
+    "oik": "old or irregular kana form",
+    "on-mim": "onomatopoeic or mimetic word",
+    "pn": "pronoun",
+    "poet": "poetical term",
+    "pol": "polite (teineigo) language",
+    "pref": "prefix",
+    "proverb": "proverb",
+    "prt": "particle",
+    "physics": "physics terminology",
+    "quote": "quotation",
+    "rare": "rare",
+    "sens": "sensitive",
+    "sl": "slang",
+    "suf": "suffix",
+    "uK": "word usually written using kanji alone",
+    "uk": "word usually written using kana alone",
+    "unc": "unclassified",
+    "yoji": "yojijukugo",
+    "v1": "Ichidan verb",
+    "v1-s": "Ichidan verb - kureru special class",
+    "v2a-s": "Nidan verb with 'u' ending (archaic)",
+    "v4h": "Yodan verb with `hu/fu' ending (archaic)",
+    "v4r": "Yodan verb with `ru' ending (archaic)",
+    "v5aru": "Godan verb - -aru special class",
+    "v5b": "Godan verb with `bu' ending",
+    "v5g": "Godan verb with `gu' ending",
+    "v5k": "Godan verb with `ku' ending",
+    "v5k-s": "Godan verb - Iku/Yuku special class",
+    "v5m": "Godan verb with `mu' ending",
+    "v5n": "Godan verb with `nu' ending",
+    "v5r": "Godan verb with `ru' ending",
+    "v5r-i": "Godan verb with `ru' ending (irregular verb)",
+    "v5s": "Godan verb with `su' ending",
+    "v5t": "Godan verb with `tsu' ending",
+    "v5u": "Godan verb with `u' ending",
+    "v5u-s": "Godan verb with `u' ending (special class)",
+    "v5uru": "Godan verb - Uru old class verb (old form of Eru)",
+    "vz": "Ichidan verb - zuru verb (alternative form of -jiru verbs)",
+    "vi": "intransitive verb",
+    "vk": "Kuru verb - special class",
+    "vn": "irregular nu verb",
+    "vr": "irregular ru verb, plain form ends with -ri",
+    "vs": "noun or participle which takes the aux. verb suru",
+    "vs-c": "su verb - precursor to the modern suru",
+    "vs-s": "suru verb - special class",
+    "vs-i": "suru verb - included",
+    "kyb": "Kyoto-ben",
+    "osb": "Osaka-ben",
+    "ksb": "Kansai-ben",
+    "ktb": "Kantou-ben",
+    "tsb": "Tosa-ben",
+    "thb": "Touhoku-ben",
+    "tsug": "Tsugaru-ben",
+    "kyu": "Kyuushuu-ben",
+    "rkb": "Ryuukyuu-ben",
+    "nab": "Nagano-ben",
+    "hob": "Hokkaido-ben",
+    "vt": "transitive verb",
+    "vulg": "vulgar expression or word",
+    "adj-kari": "`kari' adjective (archaic)",
+    "adj-ku": "`ku' adjective (archaic)",
+    "adj-shiku": "`shiku' adjective (archaic)",
+    "adj-nari": "archaic/formal form of na-adjective",
+    "n-pr": "proper noun",
+    "v-unspec": "verb unspecified",
+    "v4k": "Yodan verb with `ku' ending (archaic)",
+    "v4g": "Yodan verb with `gu' ending (archaic)",
+    "v4s": "Yodan verb with `su' ending (archaic)",
+    "v4t": "Yodan verb with `tsu' ending (archaic)",
+    "v4n": "Yodan verb with `nu' ending (archaic)",
+    "v4b": "Yodan verb with `bu' ending (archaic)",
+    "v4m": "Yodan verb with `mu' ending (archaic)",
+    "v2k-k": "Nidan verb (upper class) with `ku' ending (archaic)",
+    "v2g-k": "Nidan verb (upper class) with `gu' ending (archaic)",
+    "v2t-k": "Nidan verb (upper class) with `tsu' ending (archaic)",
+    "v2d-k": "Nidan verb (upper class) with `dzu' ending (archaic)",
+    "v2h-k": "Nidan verb (upper class) with `hu/fu' ending (archaic)",
+    "v2b-k": "Nidan verb (upper class) with `bu' ending (archaic)",
+    "v2m-k": "Nidan verb (upper class) with `mu' ending (archaic)",
+    "v2y-k": "Nidan verb (upper class) with `yu' ending (archaic)",
+    "v2r-k": "Nidan verb (upper class) with `ru' ending (archaic)",
+    "v2k-s": "Nidan verb (lower class) with `ku' ending (archaic)",
+    "v2g-s": "Nidan verb (lower class) with `gu' ending (archaic)",
+    "v2s-s": "Nidan verb (lower class) with `su' ending (archaic)",
+    "v2z-s": "Nidan verb (lower class) with `zu' ending (archaic)",
+    "v2t-s": "Nidan verb (lower class) with `tsu' ending (archaic)",
+    "v2d-s": "Nidan verb (lower class) with `dzu' ending (archaic)",
+    "v2n-s": "Nidan verb (lower class) with `nu' ending (archaic)",
+    "v2h-s": "Nidan verb (lower class) with `hu/fu' ending (archaic)",
+    "v2b-s": "Nidan verb (lower class) with `bu' ending (archaic)",
+    "v2m-s": "Nidan verb (lower class) with `mu' ending (archaic)",
+    "v2y-s": "Nidan verb (lower class) with `yu' ending (archaic)",
+    "v2r-s": "Nidan verb (lower class) with `ru' ending (archaic)",
+    "v2w-s": "Nidan verb (lower class) with `u' ending and `we' conjugation (archaic)",
+    "archit": "architecture term",
+    "astron": "astronomy, etc. term",
+    "baseb": "baseball term",
+    "biol": "biology term",
+    "bot": "botany term",
+    "bus": "business term",
+    "econ": "economics term",
+    "engr": "engineering term",
+    "finc": "finance term",
+    "geol": "geology, etc. term",
+    "law": "law, etc. term",
+    "mahj": "mahjong term",
+    "med": "medicine, etc. term",
+    "music": "music term",
+    "Shinto": "Shinto term",
+    "shogi": "shogi term",
+    "sports": "sports term",
+    "sumo": "sumo term",
+    "zool": "zoology term",
+    "joc": "jocular, humorous term",
+    "anat": "anatomical term",
+}
+
+ENTITY_LOOKUP = {v: k for k, v in ENTITIES.items()}
+
+POS_SIMPLE = {
+    'adj-f': 'adjective (pre-noun)',
+    'adj-i': 'い-adjective',
+    'adj-ix': 'い-adjective',
+    'adj-ku': 'く-adjective',
+    'adj-na': 'な-adjective',
+    'adj-nari': 'な-adjective (formal/archaic)',
+    'adj-no': 'の-adjective',
+    'adj-pn': 'adjective (pre-noun)',
+    'adj-ku': 'しく-adjective',
+    'adj-t': 'たる-adjective',
+    'adv': 'adverb',
+    'adv-to': 'と-adverb',
+    'exp': 'expression',
+    'int': 'interjection',
+    'n': 'noun',
+    'n-adv': 'adverbial noun',
+    'n-pref': 'noun (prefix)',
+    'n-suf': 'noun (suffix)',
+    'n-t': 'noun (temporal)',
+    'v-unspec': 'verb',
+    'v1': 'ichidan verb',
+    'v1-s': 'ichidan verb',
+    'v2a-s': 'nidan verb',
+    'v2b-k': 'nidan verb',
+    'v2b-s': 'nidan verb',
+    'v2d-k': 'nidan verb',
+    'v2d-s': 'nidan verb',
+    'v2g-k': 'nidan verb',
+    'v2g-s': 'nidan verb',
+    'v2h-k': 'nidan verb',
+    'v2h-s': 'nidan verb',
+    'v2k-k': 'nidan verb',
+    'v2k-s': 'nidan verb',
+    'v2m-k': 'nidan verb',
+    'v2m-s': 'nidan verb',
+    'v2n-s': 'nidan verb',
+    'v2r-k': 'nidan verb',
+    'v2r-s': 'nidan verb',
+    'v2s-s': 'nidan verb',
+    'v2t-k': 'nidan verb',
+    'v2t-s': 'nidan verb',
+    'v2w-s': 'nidan verb',
+    'v2y-k': 'nidan verb',
+    'v2y-s': 'nidan verb',
+    'v2z-s': 'nidan verb',
+    'v4b': 'yodan verb',
+    'v4g': 'yodan verb',
+    'v4h': 'yodan verb',
+    'v4k': 'yodan verb',
+    'v4m': 'yodan verb',
+    'v4n': 'yodan verb',
+    'v4r': 'yodan verb',
+    'v4s': 'yodan verb',
+    'v4t': 'yodan verb',
+    'v5aru': 'godan verb',
+    'v5b': 'godan verb',
+    'v5g': 'godan verb',
+    'v5k': 'godan verb',
+    'v5k-s': 'godan verb',
+    'v5m': 'godan verb',
+    'v5n': 'godan verb',
+    'v5r': 'godan verb',
+    'v5r-i': 'irregular verb',
+    'v5s': 'godan verb',
+    'v5t': 'godan verb',
+    'v5u': 'godan verb',
+    'v5u-s': 'godan verb',
+    'v5uru': 'godan verb',
+    'vk': 'kuru verb',
+    'vn': 'irregular verb',
+    'vr': 'irregular verb',
+    'vs': 'する-noun',
+    'vs-c': 'irregular verb',
+    'vs-i': 'suru verb',
+    'vs-s': 'suru verb',
+    'vz': 'ichidan verb',
+}
+
+POS_DETAILS = {
+    'adj-f':    ('adj',  'pre-noun'),
+    'adj-i':    ('adj',  'i'),
+    'adj-ix':   ('adj',  'i'),
+    'adj-ku':   ('adj',  'ku'),
+    'adj-na':   ('adj',  'na'),
+    'adj-nari': ('adj',  'nari'),
+    'adj-no':   ('adj',  'no'),
+    'adj-pn':   ('adj',  'pre-noun',),
+    'adj-shiku': ('adj', 'shiku'),
+    'adj-t':    ('adj',  'taru'),
+    'adv':      ('adv',  None),
+    'adv-to':   ('adv',  'to'),
+    'aux':      ('aux',  None),
+    'conj':     ('conj', None),
+    'cop-da':   ('verb', 'copula'),
+    'ctr':      ('counter', None),
+    'exp':      ('expr', None),
+    'int':      ('int',  None),
+    'n':        ('noun', None),
+    'n-adv':    ('noun', 'adv'),
+    'n-pr':     ('noun', 'proper'),
+    'n-pref':   ('noun', 'prefix'),
+    'n-suf':    ('noun', 'suffix'),
+    'n-t':      ('noun', 'temporal'),
+    'num':      ('numeric', None),
+    'pref':     ('prefix', None),
+    'prt':      ('particle', None),
+    'pn':       ('pronoun', None),
+    'suf':      ('suffix', None),
+    'unc':      (None, None),
+    'v-unspec': ('verb', None),
+    'v1':       ('verb', 'ichidan'),
+    'v1-s':     ('verb', 'ichidan'),
+    'v2a-s':    ('verb', 'nidan'),
+    'v2b-k':    ('verb', 'nidan'),
+    'v2b-s':    ('verb', 'nidan'),
+    'v2d-k':    ('verb', 'nidan'),
+    'v2d-s':    ('verb', 'nidan'),
+    'v2g-k':    ('verb', 'nidan'),
+    'v2g-s':    ('verb', 'nidan'),
+    'v2h-k':    ('verb', 'nidan'),
+    'v2h-s':    ('verb', 'nidan'),
+    'v2k-k':    ('verb', 'nidan'),
+    'v2k-s':    ('verb', 'nidan'),
+    'v2m-k':    ('verb', 'nidan'),
+    'v2m-s':    ('verb', 'nidan'),
+    'v2n-s':    ('verb', 'nidan'),
+    'v2r-k':    ('verb', 'nidan'),
+    'v2r-s':    ('verb', 'nidan'),
+    'v2s-s':    ('verb', 'nidan'),
+    'v2t-k':    ('verb', 'nidan'),
+    'v2t-s':    ('verb', 'nidan'),
+    'v2w-s':    ('verb', 'nidan'),
+    'v2y-k':    ('verb', 'nidan'),
+    'v2y-s':    ('verb', 'nidan'),
+    'v2z-s':    ('verb', 'nidan'),
+    'v4b':      ('verb', 'yodan'),
+    'v4g':      ('verb', 'yodan'),
+    'v4h':      ('verb', 'yodan'),
+    'v4k':      ('verb', 'yodan'),
+    'v4m':      ('verb', 'yodan'),
+    'v4n':      ('verb', 'yodan'),
+    'v4r':      ('verb', 'yodan'),
+    'v4s':      ('verb', 'yodan'),
+    'v4t':      ('verb', 'yodan'),
+    'v5aru':    ('verb', 'godan'),
+    'v5b':      ('verb', 'godan'),
+    'v5g':      ('verb', 'godan'),
+    'v5k':      ('verb', 'godan'),
+    'v5k-s':    ('verb', 'godan'),
+    'v5m':      ('verb', 'godan'),
+    'v5n':      ('verb', 'godan'),
+    'v5r':      ('verb', 'godan'),
+    'v5r-i':    ('verb', 'irregular'),
+    'v5s':      ('verb', 'godan'),
+    'v5t':      ('verb', 'godan'),
+    'v5u':      ('verb', 'godan'),
+    'v5u-s':    ('verb', 'godan'),
+    'v5uru':    ('verb', 'godan'),
+    'vk':       ('verb', 'kuru'),
+    'vn':       ('verb', 'irregular'),
+    'vr':       ('verb', 'irregular'),
+    'vs':       ('noun', 'suru'),
+    'vs-c':     ('verb', 'irregular'),
+    'vs-i':     ('verb', 'suru'),
+    'vs-s':     ('verb', 'suru'),
+    'vz':       ('verb', 'ichidan'),
+}
+
+MISC_ATTRS = {
+    'abbr': 'abbr',
+    'arch': 'archaism',
+    'chn': 'childrens_language',
+    'col': 'colloquialism',
+    'derog': 'derogatory',
+    'fam': 'familiar_language',
+    'fem': 'female_language',
+    'hon': 'honorific',
+    'hum': 'humble',
+    'id': 'idiomatic',
+    'joc': 'jocular_language',
+    'm-sl': 'manga_slang',
+    'male': 'male_language',
+    'obs': 'obsolete',
+    'obsc': 'obscure',
+    'on-mim': 'onomatopoeic',
+    'poet': 'poetical',
+    'pol': 'polite_language',
+    'proverb': 'proverb',
+    'quote': 'quote',
+    'rare': 'rare',
+    'sens': 'sensitive',
+    'sl': 'slang',
+    'uk': 'usually_kana',
+    'vulg': 'vulgar_language',
+    'yoji': 'yojijukugo',
+}
 # fmt: on
 
 _DEFAULT = object()
@@ -116,10 +492,8 @@ def parse_sense(elem, prev_sense):
         "gloss": parse_glosses(elem),
     }
     add_if_present(data, elem, "s_inf")
-    if not data["pos"]:
-        data["pos"] = prev_sense.get("pos", [])
-    if not data["misc"]:
-        data["misc"] = prev_sense.get("misc", [])
+    data['pos'] = [ENTITY_LOOKUP[p] for p in data['pos']]
+    data['misc'] = [ENTITY_LOOKUP[m] for m in data['misc']]
     return {k: v for k, v in data.items() if v}
 
 
@@ -160,9 +534,12 @@ def parse_entry(elem):
     }
     prev_sense = {}
     for e in elem.findall("sense"):
+        if not e:
+            continue
         s = parse_sense(e, prev_sense)
         data["sense"].append(s)
         prev_sense = s
+    return data
 
 
 def load_xml(filename):
@@ -206,7 +583,75 @@ def print_list(data, indent):
     sys.stdout.write(indent + "]")
 
 
+def senses_overlap(sense, prev_sense):
+    for field in ["stagk", "stagr", "xref", "ant", "pos", "field", "misc", "dial", "lsource", "s_inf"]:
+        if field in sense and prev_sense.get(field) != sense[field]:
+            return False
+    for lang in sense["gloss"].keys():
+        if lang in prev_sense["gloss"]:
+            return False
+    return True
+
+
+def pos_details(pos):
+    result = []
+    vt = 'vt' in pos
+    vi = 'vi' in pos
+    auxv = 'aux-v' in pos
+    auxa = 'aux-adj' in pos
+    for p in pos:
+        if p not in POS_DETAILS:
+            continue
+        full_desc = ENTITIES[p]
+        simple_desc = POS_SIMPLE.get(p, full_desc)
+        cat, subcat = POS_DETAILS[p]
+        archaic = '(archaic)' in full_desc
+        pd = {'tag': p, 'full_desc': full_desc, 'simple_desc': simple_desc, 'cat': cat, 'subcat': subcat, 'archaic': archaic}
+        if cat == 'verb':
+            pd['transitive'] = vt
+            pd['intransitive'] = vi
+            pd['auxiliary'] = auxv
+        if cat == 'adj':
+            pd['auxiliary'] = auxa
+        result.append(pd)
+    return result
+
+
+def postprocess(entries):
+    for entry in entries:
+        senses = []
+        for sense in entry['sense']:
+            found = False
+            for prev_sense in senses:
+                if senses_overlap(sense, prev_sense):
+                    # There is nothing different from a previous sense, except a
+                    # definition in a different language than before.  Consider these
+                    # to be the same sense with multiple languages instead (the way it
+                    # should have been to begin with).
+                    prev_sense['gloss'].update(sense['gloss'])
+                    found = True
+                    break
+            if not found:
+                senses.append(sense)
+
+        prev_sense = senses[0]
+        for sense in senses:
+            if sense.get("pos"):
+                sense['pos_details'] = pos_details(sense['pos'])
+            else:
+                sense["pos"] = prev_sense.get("pos", [])
+                sense["pos_details"] = prev_sense.get("pos_details", [])
+            if not sense.get('misc'):
+                sense["misc"] = prev_sense.get("misc", [])
+            for k, v in MISC_ATTRS.items():
+                if k in sense['misc']:
+                    sense[v] = True
+            prev_sense = sense
+        entry['sense'] = senses
+
+
 entries = load_xml(sys.argv[1])
+postprocess(entries)
 
 sys.stdout.write("# -*- coding: utf-8 -*-\n")
 sys.stdout.write("from __future__ import unicode_literals\n")
