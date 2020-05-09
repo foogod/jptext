@@ -292,7 +292,7 @@ POS_SIMPLE = {
     'v5b': 'godan verb',
     'v5g': 'godan verb',
     'v5k': 'godan verb',
-    'v5k-s': 'godan verb',
+    'v5k-s': 'godan verb (special)',
     'v5m': 'godan verb',
     'v5n': 'godan verb',
     'v5r': 'godan verb',
@@ -303,10 +303,9 @@ POS_SIMPLE = {
     'v5u-s': 'godan verb',
     'v5uru': 'godan verb',
     'vk': 'kuru verb',
-    'vn': 'irregular verb',
+    'vn': 'godan verb',
     'vr': 'irregular verb',
     'vs': 'する-noun',
-    'vs-c': 'irregular verb',
     'vs-i': 'suru verb',
     'vs-s': 'suru verb',
     'vz': 'ichidan verb',
@@ -382,7 +381,7 @@ POS_DETAILS = {
     'v5b':      ('verb', 'godan'),
     'v5g':      ('verb', 'godan'),
     'v5k':      ('verb', 'godan'),
-    'v5k-s':    ('verb', 'godan'),
+    'v5k-s':    ('verb', 'irregular'),
     'v5m':      ('verb', 'godan'),
     'v5n':      ('verb', 'godan'),
     'v5r':      ('verb', 'godan'),
@@ -393,10 +392,9 @@ POS_DETAILS = {
     'v5u-s':    ('verb', 'godan'),
     'v5uru':    ('verb', 'godan'),
     'vk':       ('verb', 'kuru'),
-    'vn':       ('verb', 'irregular'),
-    'vr':       ('verb', 'irregular'),
+    'vn':       ('verb', 'godan'),
+    'vr':       ('verb', 'irregular'), #FIXME: archaic
     'vs':       ('noun', 'suru'),
-    'vs-c':     ('verb', 'irregular'),
     'vs-i':     ('verb', 'suru'),
     'vs-s':     ('verb', 'suru'),
     'vz':       ('verb', 'ichidan'),
@@ -433,6 +431,10 @@ MISC_ATTRS = {
 # fmt: on
 
 _DEFAULT = object()
+
+
+def warn(msg):
+    sys.stderr.write("WARNING: {}\n".format(msg))
 
 
 def parse_list(elem, subelem_name):
@@ -597,9 +599,18 @@ def pos_details(pos):
     result = []
     vt = 'vt' in pos
     vi = 'vi' in pos
+    vsc = 'vs-c' in pos
     auxv = 'aux-v' in pos
     auxa = 'aux-adj' in pos
+    seen = set()
+    verb_subcats = set()
+    if vsc and 'v5s' not in pos:
+        # Some entries have 'vs-c', but not 'v5s', but all vs-c verbs should also be v5s verbs.
+        pos.append('v5s')
     for p in pos:
+        if p in seen:
+            continue
+        seen.add(p)
         if p not in POS_DETAILS:
             continue
         full_desc = ENTITIES[p]
@@ -611,9 +622,16 @@ def pos_details(pos):
             pd['transitive'] = vt
             pd['intransitive'] = vi
             pd['auxiliary'] = auxv
+            pd['su_verb'] = vsc
+            verb_subcats.add(subcat)
         if cat == 'adj':
             pd['auxiliary'] = auxa
         result.append(pd)
+    if len(verb_subcats) > 1:
+        if 'irregular' in verb_subcats:
+            result = [pd for pd in result if pd['cat'] != 'verb' or pd['subcat'] == 'irregular']
+        else:
+            warn("Conflicting verb types in same pos: {!r}".format(tuple(verb_subcats)))
     return result
 
 
