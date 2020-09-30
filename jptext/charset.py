@@ -2,6 +2,7 @@
 
 from __future__ import unicode_literals
 import unicodedata
+import re
 
 
 class CharacterSet(object):
@@ -86,7 +87,10 @@ class katakana(KanaCharacterSet):
     comma = "、"
     quotes = "「」"
     re_range_block = "\u30a0-\u30ff"
-    re_range_nosym = "\u30a1-\u30fa" + "\u30ff"
+    # Note: We include 'ー' in the "nosym" range because even though it is
+    # technically a symbol, it is really a "word character" (not a separator)
+    # in the context of katakana words.
+    re_range_nosym = "\u30a1-\u30fa" + "\u30fc" + "\u30ff"
     re_range = "\u309b" + "\u309c" + re_range_block + fullwidth.re_range_punct
     mora_re = (
         ("[" + large + small_non_combining + ligatures + repeats + sokuon + intraword + "]")
@@ -117,7 +121,10 @@ class katakana_halfwidth(KanaCharacterSet):
     comma = "､"
     quotes = "｢｣"
     re_range_block = "\uff65-\uff9f"
-    re_range_nosym = "\uff66-\uff6f\uff71-\uff9d"
+    # Note: We include 'ｰ' in the "nosym" range because even though it is
+    # technically a symbol, it is really a "word character" (not a separator)
+    # in the context of katakana words.
+    re_range_nosym = "\uff66-\uff6f\uff70-\uff9d"
     re_range = re_range_block + halfwidth.re_range_punct
     mora_re = (
         ("[" + large + small_non_combining + ligatures + repeats + sokuon + intraword + "]")
@@ -135,6 +142,16 @@ class kanji(CharacterSet):
     re_range_block = "\u3400-\u4db5" + "\u4e00-\u9fcb" + "\uf900-\ufa6a"
     re_range_nosym = "\u3005" + re_range_block
     re_range = "\u3005" + re_range_block + fullwidth.re_range_punct
+
+
+class jptext_fullwidth(CharacterSet):
+    re_range_nosym = hiragana.re_range_nosym + katakana.re_range_nosym + kanji.re_range_nosym
+    re_range = re_range_nosym + fullwidth.re_range_punct
+
+
+class jptext(CharacterSet):
+    re_range_nosym = jptext_fullwidth.re_range_nosym + katakana_halfwidth.re_range_nosym
+    re_range = jptext_fullwidth.re_range + katakana_halfwidth.re_range
 
 
 _hiragana_to_katakana_trmap = {ord(a): ord(b) for a, b in zip(hiragana._trans_set, katakana._trans_set)}
@@ -172,3 +189,13 @@ def ascii_fullwidth_to_halfwidth(text):
 
 def ascii_halfwidth_to_fullwidth(text):
     return text.translate(_asciihw_to_asciifw_trmap)
+
+
+def jptext_portions(text, punctuation=False):
+    if punctuation:
+        re_range = jptext.re_range
+    else:
+        re_range = jptext.re_range_nosym
+    rexp = re.compile('[{}]+'.format(re_range))
+    return rexp.findall(text)
+
