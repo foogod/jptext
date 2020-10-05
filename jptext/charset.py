@@ -49,6 +49,7 @@ class hiragana(KanaCharacterSet):
     small_non_combining = "ゕゖ"
     vowels = "あいうえお"
     sokuon = "っ"
+    hybrid_sokuon = "ッ"  # (See note below)
     stresses = "゛゜"
     intraword = "・ー"
     repeats = "ゝゞ"
@@ -68,6 +69,16 @@ class hiragana(KanaCharacterSet):
         + "|"
         + ("[" + small_non_combining + ligatures + repeats + intraword + "]")
     )
+    # Occasionally, some words will be spelled in katakana with a final bit
+    # (usually と) in hiragana.  In these cases, if there is a sokuon before
+    # the final bit, the sokuon is often katakana, but the next mora is
+    # hiragana, which the normal sokuonmora_re will not handle.  The following
+    # correctly matches those cases as well:
+    hybrid_sokuonmora_re = (
+        ("[" + sokuon + hybrid_sokuon + "]?[" + large + "][" + stresses + "]?[" + combining + "]?")
+        + "|"
+        + ("[" + small_non_combining + ligatures + repeats + intraword + "]")
+    )
 
 
 class katakana(KanaCharacterSet):
@@ -80,6 +91,7 @@ class katakana(KanaCharacterSet):
     small_non_combining = "ヵヶ"
     vowels = "アイウエオ"
     sokuon = "ッ"
+    hybrid_sokuon = "っ"  # (See note below)
     stresses = "゛゜"
     intraword = "゠・ー"
     repeats = "ヽヾ"
@@ -99,6 +111,14 @@ class katakana(KanaCharacterSet):
     )
     sokuonmora_re = (
         (sokuon + "?[" + large + "][" + stresses + "]?[" + combining + "]?")
+        + "|"
+        + ("[" + small_non_combining + ligatures + repeats + intraword + "]")
+    )
+    # This is to catch cases where a hiragana sokuon is followed by a katakana
+    # mora.  In practice, this is not nearly as likely to happen as the other
+    # way around (see hiragana.hybrid_sokuonmora_re), but this is included for completeness.
+    hybrid_sokuonmora_re = (
+        ("[" + sokuon + hybrid_sokuon + "]?[" + large + "][" + stresses + "]?[" + combining + "]?")
         + "|"
         + ("[" + small_non_combining + ligatures + repeats + intraword + "]")
     )
@@ -198,4 +218,18 @@ def jptext_portions(text, punctuation=False):
         re_range = jptext.re_range_nosym
     rexp = re.compile('[{}]+'.format(re_range))
     return rexp.findall(text)
+
+def is_charset(charset, text, punctuation=True):
+    if punctuation:
+        re_range = charset.re_range + '\s'
+    else:
+        re_range = charset.re_range_nosym
+    rexp = re.compile('^[{}]*$'.format(re_range))
+    return bool(rexp.match(text))
+
+def is_hiragana(text, punctuation=True):
+    return is_charset(hiragana, text, punctuation)
+
+def is_katakana(text, punctuation=True):
+    return is_charset(katakana, text, punctuation)
 

@@ -27,13 +27,13 @@ class EncodingChangeError(RomajiException):
 
 class Encoding(object):
     base_mapping_info = ()
+    trailing_sokuon = "-"
     auto_sokuon = True
+    hybrid_sokuon = True
     romaji_regex = re.compile("(.*?)([bcdfghj-np-tv-z]*[aeiou]|n|$)([\u0300-\u036f]?)")
     hiragana_regex = re.compile("(.*?)(" + charset.hiragana.sokuonmora_re + "|$)(ー?)")
     katakana_regex = re.compile("(.*?)(" + charset.katakana.sokuonmora_re + "|$)(ー?)")
-    kana_regex = re.compile(
-        "(.*?)(" + charset.hiragana.sokuonmora_re + "|" + charset.katakana.sokuonmora_re + "|$)(ー?)"
-    )
+    kana_regex = None  # Populated by default in __init__ instead.  Can be overridden here in subclasses, though.
 
     def __init__(self, flags=KEXT_ALL):
         self.flags = flags
@@ -45,66 +45,102 @@ class Encoding(object):
             if f == KEXT_NONE or (f & flags):
                 self.set_encoding(h, k, r)
 
+        if self.kana_regex is None:
+            if self.hybrid_sokuon:
+                self.kana_regex = re.compile(
+                    "(.*?)(" + charset.hiragana.hybrid_sokuonmora_re + "|"
+                    + charset.katakana.hybrid_sokuonmora_re + "|$)(ー?)"
+                )
+            else:
+                self.kana_regex = re.compile(
+                    "(.*?)(" + charset.hiragana.sokuonmora_re + "|"
+                    + charset.katakana.sokuonmora_re + "|$)(ー?)"
+                )
+
     def __call__(self, flags=None):
         # This allows us to use a class or an instance of that class in the same way
         if flags is not None and flags != self.flags:
             raise EncodingChangeError("Attempt to change an encoding instance's flags after creation")
         return self
 
-    def set_encoding(self, hiragana, katakana, romaji, direction=DIR_BOTH, auto_sokuon=None):
+    def set_encoding(self, hiragana, katakana, romaji, direction=DIR_BOTH, auto_sokuon=None, hybrid_sokuon=None):
         if auto_sokuon is None:
             auto_sokuon = self.auto_sokuon
-        self._set_encoding(hiragana, katakana, romaji, direction)
-        if auto_sokuon:
-            romaji = romaji[0] + romaji  # Duplicate first letter
-            if hiragana:
-                if hiragana[0] not in charset.hiragana.vowels:
-                    hiragana = charset.hiragana.sokuon + hiragana
-                else:
-                    hiragana = ""
-            if katakana:
-                if katakana[0] not in charset.katakana.vowels:
-                    katakana = charset.katakana.sokuon + katakana
-                else:
-                    katakana = ""
-            if hiragana or katakana:
-                self._set_encoding(hiragana, katakana, romaji, direction)
+        if hybrid_sokuon is None:
+            hybrid_sokuon = self.hybrid_sokuon
+        sokuon_romaji = romaji[0] + romaji  # Duplicate first letter
 
-    def _set_encoding(self, hiragana, katakana, romaji, direction):
         if hiragana:
-            if direction & DIR_TO_ROMAJI:
-                self.k_to_r_map[hiragana] = romaji
-            if direction & DIR_FROM_ROMAJI:
-                self.r_to_h_map[romaji] = hiragana
+            self._set_hiragana_encoding(hiragana, romaji, direction)
+            if auto_sokuon:
+                if hiragana[0] not in charset.hiragana.vowels:
+                    self._set_hiragana_encoding(charset.hiragana.sokuon + hiragana, sokuon_romaji, direction)
+                    if hybrid_sokuon:
+                        self._set_hiragana_encoding(charset.katakana.sokuon + hiragana, sokuon_romaji, direction & DIR_TO_ROMAJI)
+
         if katakana:
-            if direction & DIR_TO_ROMAJI:
-                self.k_to_r_map[katakana] = romaji
-            if direction & DIR_FROM_ROMAJI:
-                self.r_to_k_map[romaji] = katakana
+            self._set_katakana_encoding(katakana, romaji, direction)
+            if auto_sokuon:
+                if katakana[0] not in charset.katakana.vowels:
+                    self._set_katakana_encoding(charset.katakana.sokuon + katakana, sokuon_romaji, direction)
+
+                    if hybrid_sokuon:
+                        self._set_katakana_encoding(charset.hiragana.sokuon + katakana, sokuon_romaji, direction & DIR_TO_ROMAJI)
+
+    def _set_hiragana_encoding(self, kana, romaji, direction):
+        if direction & DIR_TO_ROMAJI:
+            self.k_to_r_map[kana] = romaji
+        if direction & DIR_FROM_ROMAJI:
+            self.r_to_h_map[romaji] = kana
+
+    def _set_katakana_encoding(self, kana, romaji, direction):
+        if direction & DIR_TO_ROMAJI:
+            self.k_to_r_map[kana] = romaji
+        if direction & DIR_FROM_ROMAJI:
+            self.r_to_k_map[romaji] = kana
+
+    def hiragana_encoder(self, on_invalid=ACTION_PASS, macron=None):
+        # TODO: implement on_invalid
+        return Encoder(self, self.hiragana_regex, self.k_to_r_map, charset.hiragana.sokuon, macron)
+
+    def katakana_encoder(self, on_invalid=ACTION_PASS, macron=None):
+        return Encoder(self, self.katakana_regex, self.k_to_r_map, charset.katakana.sokuon, macron)
+
+    def kana_encoder(self, on_invalid=ACTION_PASS, macron=None):
+        return Encoder(self, self.kana_regex, self.k_to_r_map, charset.hiragana.sokuon + charset.katakana.sokuon, macron)
+
+    def hiragana_decoder(self, on_invalid=ACTION_PASS, macron="\u0302\u0303\u0304\u0305"):
+        return Decoder(self, self.romaji_regex, self.r_to_h_map, charset.hiragana.sokuon, macron)
+
+    def katakana_decoder(self, on_invalid=ACTION_PASS, macron="\u0302\u0303\u0304\u0305"):
+        return Decoder(self, self.romaji_regex, self.r_to_k_map, charset.katakana.sokuon, macron)
+
 
     def hiragana_to_romaji(self, text, on_invalid=ACTION_PASS, macron=None):
-        return Encoder(self.hiragana_regex, self.k_to_r_map, macron=macron).encode(text)
+        return self.hiragana_encoder(on_invalid=on_invalid, macron=macron).encode(text)
 
     def katakana_to_romaji(self, text, on_invalid=ACTION_PASS, macron=None):
-        return Encoder(self.katakana_regex, self.k_to_r_map, macron=macron).encode(text)
+        return self.katakana_encoder(on_invalid=on_invalid, macron=macron).encode(text)
 
     def kana_to_romaji(self, text, on_invalid=ACTION_PASS, macron=None):
-        return Encoder(self.kana_regex, self.k_to_r_map, macron=macron).encode(text)
+        return self.kana_encoder(on_invalid=on_invalid, macron=macron).encode(text)
 
     def romaji_to_hiragana(self, text, on_invalid=ACTION_PASS, macron="\u0302\u0303\u0304\u0305"):
-        return Decoder(self.romaji_regex, self.r_to_h_map, macrons=macron).decode(text)
+        return self.hiragana_decoder(on_invalid=on_invalid, macron=macron).decode(text)
 
     def romaji_to_katakana(self, text, on_invalid=ACTION_PASS, macron="\u0302\u0303\u0304\u0305"):
-        return Decoder(self.romaji_regex, self.r_to_k_map, macrons=macron).decode(text)
+        return self.katakana_decoder(on_invalid=on_invalid, macron=macron).decode(text)
 
 
 class Encoder(object):
     extended_vowel_map = {"a": "a", "i": "i", "u": "u", "e": "e", "o": "ou"}  # FIXME: should come from encoding
     macron_to_vowel_map = {"o": "u"}  # FIXME: should come from encoding
 
-    def __init__(self, regex, mapping, macron=None):
+    def __init__(self, encoding, regex, mapping, sokuon, macron=None):
+        self.encoding = encoding
         self.mapping = mapping
         self.regex = regex
+        self.sokuon = sokuon
         self.macron = macron
         self.prev_char = None
 
@@ -115,25 +151,35 @@ class Encoder(object):
 
     def _transform_match(self, match):
         pre, text, post = match.groups()
-        text = self.mapping.get(text, text)
-        if self.macron:
-            if not pre and text[0] in self.extended_vowel_map.get(self.prev_char, ""):
-                text = self.macron
-            self.prev_char = text[-1] if not post else None
-        if post:
+        if text:
+            text = self.mapping.get(text, text)
             if self.macron:
-                text += self.macron
-            else:
-                text += self.macron_to_vowel_map.get(text[-1], text[-1])
-        return pre + text
+                if not pre and text[0] in self.extended_vowel_map.get(self.prev_char, ""):
+                    text = self.macron
+                self.prev_char = text[-1] if text and not post else None
+            if post:
+                if self.macron:
+                    text += self.macron
+                else:
+                    text += self.macron_to_vowel_map.get(text[-1], text[-1])
+            return pre + text
+        else:
+            # This only happens at the end of the input, if there's some sort
+            # of incomplete mora.  Check for a trailing sokuon (most likely
+            # situation here) and convert it if appropriate.
+            if self.encoding.trailing_sokuon and pre[0] in self.sokuon:
+                return self.encoding.trailing_sokuon + pre[1:]
+            return pre
 
 
 class Decoder(object):
     extvowel_to_kana_map = {"a": "あ", "i": "い", "u": "う", "e": "え", "o": "う"}  # FIXME: should come from encoding
 
-    def __init__(self, regex, mapping, macrons=""):
+    def __init__(self, encoding, regex, mapping, sokuon, macrons=""):
+        self.encoding = encoding
         self.mapping = mapping
         self.regex = regex
+        self.sokuon = sokuon
         self.macrons = macrons
 
     def decode(self, text):
@@ -144,10 +190,19 @@ class Decoder(object):
 
     def _transform_match(self, match):
         pre, text, post = match.groups()
-        if post and post in self.macrons:
-            post = self.extvowel_to_kana_map.get(text[-1], post)  # Extended vowel
-        text = self.mapping.get(text, text)
-        return pre + text + post
+        if text:
+            if post and post in self.macrons:
+                post = self.extvowel_to_kana_map.get(text[-1], post)  # Extended vowel
+            text = self.mapping.get(text, text)
+            return pre + text + post
+        else:
+            # This only happens if there's trailing stuff at the end.  Check to
+            # see if the trailing stuff includes the "trailing_sokuon" string,
+            # and if so, convert that back into a trailing sokuon in the
+            # output.
+            if self.encoding.trailing_sokuon and pre.startswith(self.encoding.trailing_sokuon):
+                return self.sokuon + pre[len(self.encoding.trailing_sokuon):]
+            return pre
 
 
 class ModifiedHepburnEncoding(Encoding):
