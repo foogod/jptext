@@ -163,13 +163,16 @@ class Encoder(object):
                 else:
                     text += self.macron_to_vowel_map.get(text[-1], text[-1])
             return pre + text
-        else:
+        elif pre:
             # This only happens at the end of the input, if there's some sort
             # of incomplete mora.  Check for a trailing sokuon (most likely
             # situation here) and convert it if appropriate.
             if self.encoding.trailing_sokuon and pre[0] in self.sokuon:
                 return self.encoding.trailing_sokuon + pre[1:]
             return pre
+        else:
+            # End of input.  Just ignore this.
+            return ''
 
 
 class Decoder(object):
